@@ -16,6 +16,7 @@ const IconDocument = () => <svg xmlns="http://www.w3.org/2000/svg" fill="none" v
 export default function Messenger() {
   const currentUsername = localStorage.getItem('username');
   const currentEmail = localStorage.getItem('email');
+  const BASE_URL = 'https://messenger-xmx7.onrender.com';
   
   const [activeTab, setActiveTab] = useState('chats');
   const [chats, setChats] = useState([]);
@@ -86,7 +87,8 @@ export default function Messenger() {
   };
 
   useEffect(() => {
-    const socket = new SockJS('https://messenger-xmx7.onrender.com/ws');
+    // ИСПРАВЛЕНО: Протокол https для облака
+    const socket = new SockJS(`${BASE_URL}/ws`);
     const client = new Client({
       webSocketFactory: () => socket,
       onConnect: () => setStompClient(client),
@@ -488,11 +490,12 @@ export default function Messenger() {
                     <div onClick={() => isMine && setSelectedMessageId(isSelected ? null : msg.id)} className={`relative max-w-[70%] min-w-[140px] px-4 py-3 rounded-3xl shadow-sm cursor-pointer transition-all ${isMine ? 'bg-[#179cde] text-white rounded-br-none' : 'bg-white text-slate-800 rounded-bl-none border border-slate-100'} ${isSelected ? 'ring-4 ring-blue-200' : ''}`}>
                       {!isMine && <span className="text-[10px] font-black uppercase text-[#179cde] mb-1 block">{msg.sender}</span>}
                       
-                      {isImage && <div className="-mx-2 -mt-1 mb-2"><img src={`https://messenger-xmx7.onrender.com/api/files/upload${msg.fileUrl}`} alt="attachment" className="w-full max-h-[300px] object-cover rounded-2xl hover:opacity-90" onClick={() => window.open(`https://messenger-xmx7.onrender.com/api/files/upload${msg.fileUrl}`, '_blank')} /></div>}
-                      {isVideo && <div className="-mx-2 -mt-1 mb-2"><video src={`https://messenger-xmx7.onrender.com/api/files/upload${msg.fileUrl}`} controls className="w-full max-h-[300px] bg-black rounded-2xl" /></div>}
-                      {isAudio && <div className="mb-2 mt-1"><audio src={`https://messenger-xmx7.onrender.com/api/files/upload${msg.fileUrl}`} controls className="w-full h-10" /></div>}
+                      {/* ИСПРАВЛЕНО: Прямые ссылки на сервер */}
+                      {isImage && <div className="-mx-2 -mt-1 mb-2"><img src={`${BASE_URL}${msg.fileUrl}`} alt="attachment" className="w-full max-h-[300px] object-cover rounded-2xl hover:opacity-90" onClick={() => window.open(`${BASE_URL}${msg.fileUrl}`, '_blank')} /></div>}
+                      {isVideo && <div className="-mx-2 -mt-1 mb-2"><video src={`${BASE_URL}${msg.fileUrl}`} controls className="w-full max-h-[300px] bg-black rounded-2xl" /></div>}
+                      {isAudio && <div className="mb-2 mt-1"><audio src={`${BASE_URL}${msg.fileUrl}`} controls className="w-full h-10" /></div>}
                       {isDocument && (
-                        <a href={`https://messenger-xmx7.onrender.com/api/files/upload${msg.fileUrl}`} target="_blank" rel="noopener noreferrer" className={`flex items-center gap-3 p-3 mb-2 rounded-2xl ${isMine ? 'bg-white/20 hover:bg-white/30' : 'bg-slate-100 hover:bg-slate-200'}`}>
+                        <a href={`${BASE_URL}${msg.fileUrl}`} target="_blank" rel="noopener noreferrer" className={`flex items-center gap-3 p-3 mb-2 rounded-2xl ${isMine ? 'bg-white/20 hover:bg-white/30' : 'bg-slate-100 hover:bg-slate-200'}`}>
                           <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${isMine ? 'text-white' : 'text-[#179cde]'}`}><IconDocument /></div>
                           <div className="flex flex-col min-w-0 pr-2"><span className="font-bold text-[14px] truncate">{fileName}</span><span className={`text-[10px] uppercase font-black ${isMine ? 'text-blue-100' : 'text-slate-400'}`}>Документ</span></div>
                         </a>
