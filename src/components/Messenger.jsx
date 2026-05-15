@@ -86,7 +86,7 @@ export default function Messenger() {
   };
 
   useEffect(() => {
-    const socket = new SockJS('http://localhost:8080/ws');
+    const socket = new SockJS('https://messenger-xmx7.onrender.com/ws');
     const client = new Client({
       webSocketFactory: () => socket,
       onConnect: () => setStompClient(client),
